@@ -219,6 +219,9 @@ def __MAIN():
                         print("\nInvalid input!\n")
                 else:
                     print("\nInvalid input!\n")
+
+
+
         elif userChoice == 4:
             writeResult = writeConfigToFile()
             if writeResult < -1:
