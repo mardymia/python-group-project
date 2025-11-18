@@ -1,8 +1,5 @@
 import sys, random, math
 
-#  TODO:
-#   - Final test
-
 # Constants
 CLEARSCREEN_LINES = 300
 NGG_MAXNUMBER = 100
@@ -69,12 +66,12 @@ def __MAIN():
                         break
                     else:
                         if NGG_HEATHINT:
-                            print("\n  Your guess is too", "low! " if userGuess < correctGuess else "high! ", end = "")
+                            print("  Your guess is too", "low! " if userGuess < correctGuess else "high! ", end = "")
                         else:
-                            print("\n  Incorrect guess! ", end = "")
+                            print("  Incorrect guess! ", end = "")
                         if NGG_VERYCLOSEHINT and math.fabs(userGuess - correctGuess) <= correctGuess * NGG_VERYCLOSEHINTPERCENTAGE:
                             print(f"Your guess is within {NGG_VERYCLOSEHINTPERCENTAGE * 100:.1f}% of the correct guess.")
-                        print()
+                        print('\n')
             if hasGuessed:
                 print("\nYou correctly guessed the number! Correct guess:", correctGuess)
                 print("Guesses used:", guessCount, "of", NGG_MAXGUESSES if NGG_MAXGUESSES != -1 else "infinite")
@@ -107,16 +104,23 @@ def __MAIN():
                     if guessesLeft == 0:
                         break
                     else:
-                        if len(guessList) == CAB_NUMBERSIZE and userGuess.isdigit():
-                            bulls, cows = 0, 0
-                            for i in range(len(guessList)):
-                                if guessList[i] == correctSequence[i]:
-                                    bulls += 1
-                                elif guessList[i] in correctSequence:
-                                    cows += 1
-                            print(" ", bulls, "bulls," if bulls != 1 else "bull,", cows, "cows.\n" if cows != 1 else "cow.\n")
+                        repeatedDigit = False
+                        for i in range(len(userGuess)):
+                            if userGuess.count(userGuess[i]) > 1:
+                                repeatedDigit = True
+                        if not repeatedDigit:
+                            if len(guessList) == CAB_NUMBERSIZE and userGuess.isdigit():
+                                bulls, cows = 0, 0
+                                for i in range(len(guessList)):
+                                    if guessList[i] == correctSequence[i]:
+                                        bulls += 1
+                                    elif guessList[i] in correctSequence:
+                                        cows += 1
+                                print(" ", bulls, "bulls," if bulls != 1 else "bull,", cows, "cows.\n" if cows != 1 else "cow.\n")
+                            else:
+                                print("  Invalid input!\n")
                         else:
-                            print("  Invalid input!\n")
+                            print("  No repeating digits allowed!\n")
             correctString = ""
             for i in range(len(correctSequence)):
                 correctString += str(correctSequence[i])
@@ -137,6 +141,7 @@ def __MAIN():
             print(f"  5. NGG: Proximity Hint Percentage = {NGG_VERYCLOSEHINTPERCENTAGE*100:.1f}%", "(default 10.0%, max 90.0%)")
             print("  6. CAB: Maximum Number Size =", CAB_NUMBERSIZE, "(default 4, max 10)")
             print("  7. CAB: Maximum Number Of Guesses =", CAB_MAXGUESSES, "(default 10)")
+            print("  8. Cancel")
             userInput = input("\nEnter the value to change: ")
             userChoice = -1
             if userInput.isdigit():
@@ -149,7 +154,7 @@ def __MAIN():
                     userChoice = 2
                 elif findany(userInput, "3", "heat") != -1 and "cab" not in userInput:
                     userChoice = 3
-                elif findany(userInput, "4", "proximity") != -1 and "percentage" not in userInput and "cab" not in userInput:
+                elif findany(userInput, "4", "proximity") != -1 and "percent" not in userInput and "cab" not in userInput:
                     userChoice = 4
                 elif findany(userInput, "5", "proximity", "percentage") != -1 and "cab" not in userInput:
                     userChoice = 5
@@ -157,11 +162,14 @@ def __MAIN():
                     userChoice = 6
                 elif findany(userInput, "7", "guesses") != -1 and "ngg" not in userInput:
                     userChoice = 7
-            if userChoice <= 0 or userChoice > 7:
+                elif findany(userInput, "8", "cancel", "exit", "stop") != -1:
+                    userChoice = 8
+            if userChoice <= 0 or userChoice > 8:
                 print("\nInvalid input!\n")
             else:
-                userInput = input("Enter new value: ")
-                userInput = userInput.lower()
+                if userChoice != 8:
+                    userInput = input("Enter new value: ")
+                    userInput = userInput.lower()
                 if userChoice == 1:
                     if userInput.isdigit():
                         NGG_MAXNUMBER = int(userInput)
@@ -198,7 +206,7 @@ def __MAIN():
                     if len(userInput) >= 1:
                         NGG_VERYCLOSEHINTPERCENTAGE = sstod(userInput)
                         NGG_VERYCLOSEHINTPERCENTAGE = max(min(NGG_VERYCLOSEHINTPERCENTAGE/100.0,1.0),0.0)
-                        print("\nNew value:", NGG_VERYCLOSEHINTPERCENTAGE, '\n')
+                        print(f"\nNew value: {NGG_VERYCLOSEHINTPERCENTAGE*100.0:.1f}", '\n')
                     else:
                         print("\nInvalid input!\n")
                 elif userChoice == 6:
@@ -216,7 +224,10 @@ def __MAIN():
                     else:
                         print("\nInvalid input!\n")
                 else:
-                    print("\nInvalid input!\n")
+                    if userChoice != 8:
+                        print("\nInvalid input!\n")
+                    else:
+                        print("Configuration cancelled.\n")
         elif userChoice == 4:
             writeResult = writeConfigToFile()
             if writeResult < -1:
