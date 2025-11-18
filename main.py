@@ -1,8 +1,6 @@
 import sys, random, math
 
 #  TODO:
-#   - Make constants configurable
-#   - Ensure configurable constants have proper limits set
 #   - Final test
 
 # Constants
@@ -219,9 +217,6 @@ def __MAIN():
                         print("\nInvalid input!\n")
                 else:
                     print("\nInvalid input!\n")
-
-
-
         elif userChoice == 4:
             writeResult = writeConfigToFile()
             if writeResult < -1:
