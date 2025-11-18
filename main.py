@@ -2,8 +2,6 @@ import sys, random, math
 
 #  TODO:
 #   - Make constants configurable
-#   - Make readConfigFromFile() work properly (with proper exceptions)
-#   - Make writeConfigToFile() work properly (with proper exceptions)
 #   - Ensure configurable constants have proper limits set
 #   - Final test
 
@@ -27,7 +25,7 @@ def __MAIN():
     elif readResult == 1:
         print("A new configuration file has been created.")
     print("-= Number Game Program =-\n")
-    while(True):
+    while True:
         print("Enter an option:")
         print("  1. Play Number-Guessing Game")
         print("  2. Play Cows and Bulls")
@@ -70,7 +68,7 @@ def __MAIN():
                         else:
                             print("\n  Incorrect guess! ", end = "")
                         if NNG_VERYCLOSEHINT and math.fabs(userGuess - correctGuess) <= correctGuess * NNG_VERYCLOSEHINTPERCENTAGE:
-                            print(f"Your guess is within {NNG_VERYCLOSEHINTPERCENTAGE:.0f}% of the correct guess.")
+                            print(f"Your guess is within {NNG_VERYCLOSEHINTPERCENTAGE*100:.0f}% of the correct guess.")
                         print()
             if hasGuessed:
                 print("\nYou correctly guessed the number! Correct guess:", correctGuess)
@@ -87,7 +85,6 @@ def __MAIN():
             guessesLeft = CAB_MAXGUESSES
             hasGuessed = False
             guessCount = 0
-            print("DEBUG:", correctSequence)
             print(f"\nA {CAB_NUMBERSIZE}-digit code has been generated with no repeating digits.\nCan you guess it given only correctly placed digits (bulls)\nand correctly guessed but incorrectly placed digits (cows)?")
             while True:
                 print("  You have", guessesLeft, "guesses" if guessesLeft != 1 else "guess", "left.\n  Enter your guess: ", end="")
@@ -167,10 +164,67 @@ def findany(inputString, *strings):
 
 # Reads configuration values from the configuration file
 def readConfigFromFile():
-    return -1
+    configFile = None
+    try:
+        configFile = open("proj.config", "r")
+        configLines = []
+        for line in configFile:
+            configLines.append(line.strip())
+        configFile.close()
+        if len(configLines) == 8:
+            global CLEARSCREEN_LINES
+            global NNG_MAXNUMBER
+            global NNG_MAXGUESSES
+            global NNG_HEATHINT
+            global NNG_VERYCLOSEHINT
+            global NNG_VERYCLOSEHINTPERCENTAGE
+            global CAB_NUMBERSIZE
+            global CAB_MAXGUESSES
+            try:
+                CLEARSCREEN_LINES = int(configLines[0])
+                NNG_MAXNUMBER = int(configLines[1])
+                NNG_MAXGUESSES = int(configLines[2])
+                NNG_HEATHINT = configLines[3] == "True"
+                NNG_VERYCLOSEHINT = configLines[4] == "True"
+                NNG_VERYCLOSEHINTPERCENTAGE = float(configLines[5])
+                CAB_NUMBERSIZE = int(configLines[6])
+                CAB_MAXGUESSES = int(configLines[7])
+            except ValueError:
+                try:
+                    configFile = open("glist.txt", 'w')
+                    configFile.write("")
+                    configFile.close()
+                except PermissionError:
+                    pass
+                return -1
+        else:
+            return -1
+        return 0
+    except FileNotFoundError:
+        try:
+            configFile = open("glist.txt", 'w')
+            configFile.write("")
+            configFile.close()
+            return 1
+        except PermissionError:
+            return -1
 
 # Writes configuration values to the configuration file
 def writeConfigToFile():
-    return-1
+    configFile = None
+    try:
+        configFile = open("proj.config", 'w')
+    except PermissionError:
+        return -1
+    configFile.write(str(CLEARSCREEN_LINES) + "\n")
+    configFile.write(str(NNG_MAXNUMBER) + "\n")
+    configFile.write(str(NNG_MAXGUESSES) + "\n")
+    configFile.write(str(NNG_HEATHINT) + "\n")
+    configFile.write(str(NNG_VERYCLOSEHINT) + "\n")
+    configFile.write(str(NNG_VERYCLOSEHINTPERCENTAGE) + "\n")
+    configFile.write(str(CAB_NUMBERSIZE) + "\n")
+    configFile.write(str(CAB_MAXGUESSES))
+    configFile.close()
+    return 0
 
 sys.exit(__MAIN())
