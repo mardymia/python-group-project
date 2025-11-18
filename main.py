@@ -7,17 +7,24 @@ import sys, random, math
 
 # Constants
 CLEARSCREEN_LINES = 300
-NNG_MAXNUMBER = 100
-NNG_MAXGUESSES = 10
-NNG_HEATHINT = True
-NNG_VERYCLOSEHINT = False
-NNG_VERYCLOSEHINTPERCENTAGE = 0.1
-
+NGG_MAXNUMBER = 100
+NGG_MAXGUESSES = 10
+NGG_HEATHINT = True
+NGG_VERYCLOSEHINT = False
+NGG_VERYCLOSEHINTPERCENTAGE = 0.1
 CAB_NUMBERSIZE = 4
 CAB_MAXGUESSES = 10
 
 # Main function
 def __MAIN():
+    global CLEARSCREEN_LINES
+    global NGG_MAXNUMBER
+    global NGG_MAXGUESSES
+    global NGG_HEATHINT
+    global NGG_VERYCLOSEHINT
+    global NGG_VERYCLOSEHINTPERCENTAGE
+    global CAB_NUMBERSIZE
+    global CAB_MAXGUESSES
     clearscreen()
     readResult = readConfigFromFile()
     if readResult == -1:
@@ -46,8 +53,8 @@ def __MAIN():
                 userChoice = 4
         if userChoice == 1:
             clearscreen()
-            print("\nA number between 1 and", NNG_MAXNUMBER, "has been played. Can you guess it?")
-            guessesLeft = NNG_MAXGUESSES
+            print("\nA number between 1 and", NGG_MAXNUMBER, "has been played. Can you guess it?")
+            guessesLeft = NGG_MAXGUESSES
             guessCount = 0
             hasGuessed = False
             correctGuess = random.randint(1, 100)
@@ -63,19 +70,19 @@ def __MAIN():
                     if guessesLeft == 0:
                         break
                     else:
-                        if NNG_HEATHINT:
+                        if NGG_HEATHINT:
                             print("\n  Your guess is too", "low! " if userGuess < correctGuess else "high! ", end = "")
                         else:
                             print("\n  Incorrect guess! ", end = "")
-                        if NNG_VERYCLOSEHINT and math.fabs(userGuess - correctGuess) <= correctGuess * NNG_VERYCLOSEHINTPERCENTAGE:
-                            print(f"Your guess is within {NNG_VERYCLOSEHINTPERCENTAGE*100:.0f}% of the correct guess.")
+                        if NGG_VERYCLOSEHINT and math.fabs(userGuess - correctGuess) <= correctGuess * NGG_VERYCLOSEHINTPERCENTAGE:
+                            print(f"Your guess is within {NGG_VERYCLOSEHINTPERCENTAGE * 100:.1f}% of the correct guess.")
                         print()
             if hasGuessed:
                 print("\nYou correctly guessed the number! Correct guess:", correctGuess)
-                print("Guesses used:", guessCount, "of", NNG_MAXGUESSES if NNG_MAXGUESSES != -1 else "infinite")
+                print("Guesses used:", guessCount, "of", NGG_MAXGUESSES if NGG_MAXGUESSES != -1 else "infinite")
             else:
                 print("\nYou didn't guess correctly! Correct guess:", correctGuess)
-                print("Total guesses:", NNG_MAXGUESSES)
+                print("Total guesses:", NGG_MAXGUESSES)
             print("------------------------")
         elif userChoice == 2:
             clearscreen()
@@ -117,13 +124,104 @@ def __MAIN():
                 correctString += str(correctSequence[i])
             if hasGuessed:
                 print("\nYou correctly guessed the code! Correct code:", correctString)
-                print("Guesses used:", guessCount, "of", NNG_MAXGUESSES if NNG_MAXGUESSES != -1 else "infinite")
+                print("Guesses used:", guessCount, "of", NGG_MAXGUESSES if NGG_MAXGUESSES != -1 else "infinite")
             else:
                 print("\nYou didn't guess correctly! Correct guess:", correctString)
-                print("Total guesses:", NNG_MAXGUESSES)
+                print("Total guesses:", NGG_MAXGUESSES)
             print("------------------------")
         elif userChoice == 3:
-            pass
+            clearscreen()
+            print("\nProgram configuration\nConfigurable Values:")
+            print("  1. NGG: Maximum Number To Guess =", NGG_MAXNUMBER, "(default 100)")
+            print("  2. NGG: Maximum Number Of Guesses =", NGG_MAXGUESSES, "(default 10)")
+            print("  3. NGG: Heat Hint =", NGG_HEATHINT, "(default True)")
+            print("  4. NGG: Proximity Hint =", NGG_VERYCLOSEHINT, "(default False)")
+            print(f"  5. NGG: Proximity Hint Percentage = {NGG_VERYCLOSEHINTPERCENTAGE*100:.1f}%", "(default 10.0%, max 90.0%)")
+            print("  6. CAB: Maximum Number Size =", CAB_NUMBERSIZE, "(default 4, max 10)")
+            print("  7. CAB: Maximum Number Of Guesses =", CAB_MAXGUESSES, "(default 10)")
+            userInput = input("\nEnter the value to change: ")
+            userChoice = -1
+            if userInput.isdigit():
+                userChoice = int(userInput)
+            else:
+                userInput = userInput
+                if findany(userInput, "1", "to") != -1 and "guesses" not in userInput and "cab" not in userInput:
+                    userChoice = 1
+                elif findany(userInput, "2", "of", "guesses") != -1 and "cab" not in userInput:
+                    userChoice = 2
+                elif findany(userInput, "3", "heat") != -1 and "cab" not in userInput:
+                    userChoice = 3
+                elif findany(userInput, "4", "proximity") != -1 and "percentage" not in userInput and "cab" not in userInput:
+                    userChoice = 4
+                elif findany(userInput, "5", "proximity", "percentage") != -1 and "cab" not in userInput:
+                    userChoice = 5
+                elif findany(userInput, "6", "size") != -1 and "ngg" not in userInput:
+                    userChoice = 6
+                elif findany(userInput, "7", "guesses") != -1 and "ngg" not in userInput:
+                    userChoice = 7
+            if userChoice <= 0 or userChoice > 7:
+                print("\nInvalid input!\n")
+            else:
+                userInput = input("Enter new value: ")
+                userInput = userInput.lower()
+                if userChoice == 1:
+                    if userInput.isdigit():
+                        NGG_MAXNUMBER = int(userInput)
+                        NGG_MAXNUMBER = 2 if NGG_MAXNUMBER < 2 else NGG_MAXNUMBER
+                        print("\nNew value:", NGG_MAXNUMBER, '\n')
+                    else:
+                        print("\nInvalid input!\n")
+                elif userChoice == 2:
+                    if userInput.isdigit():
+                        NGG_MAXGUESSES = int(userInput)
+                        NGG_MAXGUESSES = 1 if NGG_MAXGUESSES < 1 else NGG_MAXGUESSES
+                        print("\nNew value:", NGG_MAXGUESSES, '\n')
+                    else:
+                        print("\nInvalid input!\n")
+                elif userChoice == 3:
+                    if userInput.isdigit():
+                        NGG_HEATHINT = int(userInput) != 0
+                        print("\nNew value:", NGG_HEATHINT, '\n')
+                    elif "true" in userInput or "false" in userInput:
+                        NGG_HEATHINT = "true" in userInput
+                        print("\nNew value:", NGG_HEATHINT, '\n')
+                    else:
+                        print("\nInvalid input!\n")
+                elif userChoice == 4:
+                    if userInput.isdigit():
+                        NGG_VERYCLOSEHINT = int(userInput) != 0
+                        print("\nNew value:", NGG_VERYCLOSEHINT, '\n')
+                    elif "true" in userInput or "false" in userInput:
+                        NGG_VERYCLOSEHINT = "true" in userInput
+                        print("\nNew value:", NGG_VERYCLOSEHINT, '\n')
+                    else:
+                        print("\nInvalid input!\n")
+                elif userChoice == 5:
+                    if len(userInput) >= 1:
+                        NGG_VERYCLOSEHINTPERCENTAGE = sstod(userInput)
+                        NGG_VERYCLOSEHINTPERCENTAGE = max(min(NGG_VERYCLOSEHINTPERCENTAGE/100.0,1.0),0.0)
+                        print("\nNew value:", NGG_VERYCLOSEHINTPERCENTAGE, '\n')
+                    else:
+                        print("\nInvalid input!\n")
+                elif userChoice == 6:
+                    if userInput.isdigit():
+                        CAB_NUMBERSIZE = int(userInput)
+                        CAB_NUMBERSIZE = 1 if CAB_NUMBERSIZE < 1 else CAB_NUMBERSIZE
+                        print("\nNew value:", CAB_NUMBERSIZE, '\n')
+                    else:
+                        print("\nInvalid input!\n")
+                elif userChoice == 7:
+                    if userInput.isdigit():
+                        CAB_MAXGUESSES = int(userInput)
+                        CAB_MAXGUESSES = 1 if CAB_MAXGUESSES < 1 else CAB_MAXGUESSES
+                        print("\nNew value:", CAB_MAXGUESSES, '\n')
+                    else:
+                        print("\nInvalid input!\n")
+                else:
+                    print("\nInvalid input!\n")
+
+
+
         elif userChoice == 4:
             writeResult = writeConfigToFile()
             if writeResult < -1:
@@ -143,6 +241,18 @@ def clearscreen():
         outputString += '\n'
     print(outputString, end = "")
 
+# Safely converts string to an integer
+def sstoi(inputString):
+    resultInt = 0
+    isNegative = False
+    if '-' in inputString:
+        isNegative = True
+    for i in range(len(inputString)):
+        if inputString[i].isdigit():
+            resultInt *= 10
+            resultInt += int(inputString[i])
+    return -resultInt if isNegative else resultInt
+
 # Safely converts string to an unsigned integer
 def sstoui(inputString):
     resultUnsignedInt = 0
@@ -151,6 +261,24 @@ def sstoui(inputString):
             resultUnsignedInt *= 10
             resultUnsignedInt += int(inputString[i])
     return resultUnsignedInt
+
+# Safely converts string to a double (float)
+def sstod(inputString):
+    resultDouble = 0.0
+    isDecimal, isNegative, currentDecimalPlace = False, False, 1
+    if '-' in inputString:
+        isNegative = True
+    for i in range(len(inputString)):
+        if inputString[i] == ".":
+            isDecimal = True
+        if inputString[i].isdigit():
+            if not isDecimal:
+                resultDouble *= 10
+                resultDouble += float(inputString[i])
+            else:
+                resultDouble += float(inputString[i]) / (10**currentDecimalPlace)
+                currentDecimalPlace += 1
+    return -resultDouble if isNegative else resultDouble
 
 # Checks for any substrings in a target string
 def findany(inputString, *strings):
@@ -173,20 +301,20 @@ def readConfigFromFile():
         configFile.close()
         if len(configLines) == 8:
             global CLEARSCREEN_LINES
-            global NNG_MAXNUMBER
-            global NNG_MAXGUESSES
-            global NNG_HEATHINT
-            global NNG_VERYCLOSEHINT
-            global NNG_VERYCLOSEHINTPERCENTAGE
+            global NGG_MAXNUMBER
+            global NGG_MAXGUESSES
+            global NGG_HEATHINT
+            global NGG_VERYCLOSEHINT
+            global NGG_VERYCLOSEHINTPERCENTAGE
             global CAB_NUMBERSIZE
             global CAB_MAXGUESSES
             try:
                 CLEARSCREEN_LINES = int(configLines[0])
-                NNG_MAXNUMBER = int(configLines[1])
-                NNG_MAXGUESSES = int(configLines[2])
-                NNG_HEATHINT = configLines[3] == "True"
-                NNG_VERYCLOSEHINT = configLines[4] == "True"
-                NNG_VERYCLOSEHINTPERCENTAGE = float(configLines[5])
+                NGG_MAXNUMBER = int(configLines[1])
+                NGG_MAXGUESSES = int(configLines[2])
+                NGG_HEATHINT = configLines[3] == "True"
+                NGG_VERYCLOSEHINT = configLines[4] == "True"
+                NGG_VERYCLOSEHINTPERCENTAGE = float(configLines[5])
                 CAB_NUMBERSIZE = int(configLines[6])
                 CAB_MAXGUESSES = int(configLines[7])
             except ValueError:
@@ -217,11 +345,11 @@ def writeConfigToFile():
     except PermissionError:
         return -1
     configFile.write(str(CLEARSCREEN_LINES) + "\n")
-    configFile.write(str(NNG_MAXNUMBER) + "\n")
-    configFile.write(str(NNG_MAXGUESSES) + "\n")
-    configFile.write(str(NNG_HEATHINT) + "\n")
-    configFile.write(str(NNG_VERYCLOSEHINT) + "\n")
-    configFile.write(str(NNG_VERYCLOSEHINTPERCENTAGE) + "\n")
+    configFile.write(str(NGG_MAXNUMBER) + "\n")
+    configFile.write(str(NGG_MAXGUESSES) + "\n")
+    configFile.write(str(NGG_HEATHINT) + "\n")
+    configFile.write(str(NGG_VERYCLOSEHINT) + "\n")
+    configFile.write(str(NGG_VERYCLOSEHINTPERCENTAGE) + "\n")
     configFile.write(str(CAB_NUMBERSIZE) + "\n")
     configFile.write(str(CAB_MAXGUESSES))
     configFile.close()
