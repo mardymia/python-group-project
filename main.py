@@ -52,7 +52,7 @@ def __MAIN():
             guessesLeft = NGG_MAXGUESSES
             guessCount = 0
             hasGuessed = False
-            correctGuess = random.randint(1, 100)
+            correctGuess = random.randint(1, NGG_MAXNUMBER)
             while True:
                 print("  You have", guessesLeft, "guesses" if guessesLeft != 1 else "guess", "left.\n  Enter your guess: ", end="")
                 userGuess = sstoui(input())
