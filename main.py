@@ -55,8 +55,9 @@ def __MAIN():
             correctGuess = random.randint(1, NGG_MAXNUMBER)
             while True:
                 print("  You have", guessesLeft, "guesses" if guessesLeft != 1 else "guess", "left.\n  Enter your guess: ", end="")
-                userGuess = sstoui(input())
-                if userGuess == correctGuess:
+                userInput = input()
+                userGuess = sstoui(userInput)
+                if userGuess == correctGuess and hasnumber(userInput):
                     hasGuessed = True
                     break
                 else:
@@ -171,14 +172,14 @@ def __MAIN():
                     userInput = input("Enter new value: ")
                     userInput = userInput.lower()
                 if userChoice == 1:
-                    if userInput.isdigit():
+                    if userInput.isdigit() and hasnumber(userInput):
                         NGG_MAXNUMBER = int(userInput)
                         NGG_MAXNUMBER = 2 if NGG_MAXNUMBER < 2 else NGG_MAXNUMBER
                         print("\nNew value:", NGG_MAXNUMBER, '\n')
                     else:
                         print("\nInvalid input!\n")
                 elif userChoice == 2:
-                    if userInput.isdigit():
+                    if userInput.isdigit() and hasnumber(userInput):
                         NGG_MAXGUESSES = int(userInput)
                         NGG_MAXGUESSES = 1 if NGG_MAXGUESSES < 1 else NGG_MAXGUESSES
                         print("\nNew value:", NGG_MAXGUESSES, '\n')
@@ -203,7 +204,7 @@ def __MAIN():
                     else:
                         print("\nInvalid input!\n")
                 elif userChoice == 5:
-                    if len(userInput) >= 1:
+                    if len(userInput) >= 1 and hasnumber(userInput):
                         NGG_VERYCLOSEHINTPERCENTAGE = sstod(userInput)
                         NGG_VERYCLOSEHINTPERCENTAGE = max(min(NGG_VERYCLOSEHINTPERCENTAGE/100.0,1.0),0.0)
                         print(f"\nNew value: {NGG_VERYCLOSEHINTPERCENTAGE*100.0:.1f}", '\n')
@@ -242,30 +243,49 @@ def __MAIN():
 
 # Outputs many blank lines to separate old output from new output
 def clearscreen():
-    outputString = ""
-    for i in range(CLEARSCREEN_LINES):
-        outputString += '\n'
-    print(outputString, end = "")
+    print('\n' * CLEARSCREEN_LINES, end = "")
 
 # Safely converts string to an integer
 def sstoi(inputString):
     resultInt = 0
     isNegative = False
+    doubleToInt = False
     if '-' in inputString:
         isNegative = True
-    for i in range(len(inputString)):
-        if inputString[i].isdigit():
-            resultInt *= 10
-            resultInt += int(inputString[i])
+    if '.' in inputString:
+        doubleToInt = True
+    if not doubleToInt:
+        for i in range(len(inputString)):
+            if inputString[i].isdigit():
+                resultInt *= 10
+                resultInt += int(inputString[i])
+    else:
+        for i in range(len(inputString)):
+            if inputString[i] == '.':
+                break
+            if inputString[i].isdigit():
+                resultInt *= 10
+                resultInt += int(inputString[i])
     return -resultInt if isNegative else resultInt
 
 # Safely converts string to an unsigned integer
 def sstoui(inputString):
     resultUnsignedInt = 0
-    for i in range(len(inputString)):
-        if inputString[i].isdigit():
-            resultUnsignedInt *= 10
-            resultUnsignedInt += int(inputString[i])
+    doubleToInt = False
+    if '.' in inputString:
+        doubleToInt = True
+    if not doubleToInt:
+        for i in range(len(inputString)):
+            if inputString[i].isdigit():
+                resultUnsignedInt *= 10
+                resultUnsignedInt += int(inputString[i])
+    else:
+        for i in range(len(inputString)):
+            if inputString[i] == '.':
+                break
+            if inputString[i].isdigit():
+                resultUnsignedInt *= 10
+                resultUnsignedInt += int(inputString[i])
     return resultUnsignedInt
 
 # Safely converts string to a double (float)
@@ -285,6 +305,13 @@ def sstod(inputString):
                 resultDouble += float(inputString[i]) / (10**currentDecimalPlace)
                 currentDecimalPlace += 1
     return -resultDouble if isNegative else resultDouble
+
+# Checks if a string contains numbers
+def hasnumber(inputString):
+    for i in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]:
+        if i in inputString:
+            return True
+    return False
 
 # Checks for any substrings in a target string
 def findany(inputString, *strings):
