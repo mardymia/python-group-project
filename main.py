@@ -1,7 +1,7 @@
 import sys, random, math
 
 # Constants
-CLEARSCREEN_LINES = 1
+CLEARSCREEN_LINES = 300
 NGG_MAXNUMBER = 100
 NGG_MAXGUESSES = 10
 NGG_HEATHINT = True
