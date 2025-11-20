@@ -38,13 +38,13 @@ def __MAIN():
         if userInput.isdigit():
             userChoice = int(userInput)
         else:
-            if findany(userInput, "guess", "1"):
+            if findany(userInput, "num", "guess", "1") != -1:
                 userChoice = 1
-            elif findany(userInput, "cow", "and", "bull", "2"):
+            elif findany(userInput, "cow", "and", "bull", "2") != -1:
                 userChoice = 2
-            elif findany(userInput, "configure", "games", "3"):
+            elif findany(userInput, "con", "games", "3") != -1:
                 userChoice = 3
-            elif findany(userInput, "exit", "stop", "4"):
+            elif findany(userInput, "ex", "stop", "4") != -1:
                 userChoice = 4
         if userChoice == 1:
             clearscreen()
@@ -135,14 +135,15 @@ def __MAIN():
         elif userChoice == 3:
             clearscreen()
             print("\nProgram configuration\nConfigurable Values:")
-            print("  1. NGG: Maximum Number To Guess =", NGG_MAXNUMBER, "(default 100)")
-            print("  2. NGG: Maximum Number Of Guesses =", NGG_MAXGUESSES, "(default 10)")
+            print("  1. NGG: Maximum Number To Guess =", NGG_MAXNUMBER, "(default 100, min 2)")
+            print("  2. NGG: Maximum Number Of Guesses =", NGG_MAXGUESSES, "(default 10, min 1)")
             print("  3. NGG: Heat Hint =", NGG_HEATHINT, "(default True)")
             print("  4. NGG: Proximity Hint =", NGG_VERYCLOSEHINT, "(default False)")
-            print(f"  5. NGG: Proximity Hint Percentage = {NGG_VERYCLOSEHINTPERCENTAGE*100:.1f}%", "(default 10.0%, max 90.0%)")
-            print("  6. CAB: Maximum Number Size =", CAB_NUMBERSIZE, "(default 4, max 10)")
-            print("  7. CAB: Maximum Number Of Guesses =", CAB_MAXGUESSES, "(default 10)")
-            print("  8. Cancel")
+            print(f"  5. NGG: Proximity Hint Percentage = {NGG_VERYCLOSEHINTPERCENTAGE*100:.1f}%", "(default 10.0%, min 0.0%, max 90.0%)")
+            print("  6. CAB: Maximum Number Size =", CAB_NUMBERSIZE, "(default 4, min 1, max 10)")
+            print("  7. CAB: Maximum Number Of Guesses =", CAB_MAXGUESSES, "(default 10, min 1)")
+            print("  8. Reset to defaults")
+            print("  9. Cancel")
             userInput = input("\nEnter the value to change: ")
             userChoice = -1
             if userInput.isdigit():
@@ -163,12 +164,14 @@ def __MAIN():
                     userChoice = 6
                 elif findany(userInput, "7", "guesses") != -1 and "ngg" not in userInput:
                     userChoice = 7
-                elif findany(userInput, "8", "cancel", "exit", "stop") != -1:
+                elif findany(userInput, "8", "reset", "default") != -1:
                     userChoice = 8
-            if userChoice <= 0 or userChoice > 8:
+                elif findany(userInput, "9", "cancel", "exit", "stop") != -1:
+                    userChoice = 9
+            if userChoice <= 0 or userChoice > 9:
                 print("\nInvalid input!\n")
             else:
-                if userChoice != 8:
+                if userChoice != 8 and userChoice != 9:
                     userInput = input("Enter new value: ")
                     userInput = userInput.lower()
                 if userChoice == 1:
@@ -206,7 +209,7 @@ def __MAIN():
                 elif userChoice == 5:
                     if len(userInput) >= 1 and hasnumber(userInput):
                         NGG_VERYCLOSEHINTPERCENTAGE = sstod(userInput)
-                        NGG_VERYCLOSEHINTPERCENTAGE = max(min(NGG_VERYCLOSEHINTPERCENTAGE/100.0,1.0),0.0)
+                        NGG_VERYCLOSEHINTPERCENTAGE = max(min(NGG_VERYCLOSEHINTPERCENTAGE/100.0,0.9),0.0)
                         print(f"\nNew value: {NGG_VERYCLOSEHINTPERCENTAGE*100.0:.1f}", '\n')
                     else:
                         print("\nInvalid input!\n")
@@ -224,8 +227,18 @@ def __MAIN():
                         print("\nNew value:", CAB_MAXGUESSES, '\n')
                     else:
                         print("\nInvalid input!\n")
+                elif userChoice == 8:
+                    CLEARSCREEN_LINES = 300
+                    NGG_MAXNUMBER = 100
+                    NGG_MAXGUESSES = 10
+                    NGG_HEATHINT = True
+                    NGG_VERYCLOSEHINT = False
+                    NGG_VERYCLOSEHINTPERCENTAGE = 0.1
+                    CAB_NUMBERSIZE = 4
+                    CAB_MAXGUESSES = 10
+                    print("Configuration reset.\n")
                 else:
-                    if userChoice != 8:
+                    if userChoice != 9:
                         print("\nInvalid input!\n")
                     else:
                         print("Configuration cancelled.\n")
