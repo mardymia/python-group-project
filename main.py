@@ -1,7 +1,7 @@
 import sys, random, math
 
 # Constants
-CLEARSCREEN_LINES = 300
+CLEARSCREEN_LINES = 1
 NGG_MAXNUMBER = 100
 NGG_MAXGUESSES = 10
 NGG_HEATHINT = True
@@ -38,6 +38,7 @@ def __MAIN():
         if userInput.isdigit():
             userChoice = int(userInput)
         else:
+            userInput = userInput.lower()
             if findany(userInput, "num", "guess", "1") != -1:
                 userChoice = 1
             elif findany(userInput, "cow", "and", "bull", "2") != -1:
@@ -56,7 +57,7 @@ def __MAIN():
             while True:
                 print("  You have", guessesLeft, "guesses" if guessesLeft != 1 else "guess", "left.\n  Enter your guess: ", end="")
                 userInput = input()
-                userGuess = sstoui(userInput)
+                userGuess = sstoi(userInput)
                 if userGuess == correctGuess and hasnumber(userInput):
                     hasGuessed = True
                     break
@@ -66,8 +67,10 @@ def __MAIN():
                     if guessesLeft == 0:
                         break
                     else:
-                        if NGG_HEATHINT:
-                            print("  Your guess is too", "low! " if userGuess < correctGuess else "high! ", end = "")
+                        if not hasnumber(userInput) or '.' in userInput:
+                            print("  Invalid input! ", end = "")
+                        elif NGG_HEATHINT:
+                            print("  Your guess is", ("too low! " if userGuess < correctGuess else "too high! ") if userGuess > 0 and userGuess <= NGG_MAXNUMBER else "out of bounds! ", end = "")
                         else:
                             print("  Incorrect guess! ", end = "")
                         if NGG_VERYCLOSEHINT and math.fabs(userGuess - correctGuess) <= correctGuess * NGG_VERYCLOSEHINTPERCENTAGE:
@@ -88,7 +91,7 @@ def __MAIN():
             guessesLeft = CAB_MAXGUESSES
             hasGuessed = False
             guessCount = 0
-            print(f"\nA {CAB_NUMBERSIZE}-digit code has been generated with no repeating digits.\nCan you guess it given only correctly placed digits (bulls)\nand correctly guessed but incorrectly placed digits (cows)?")
+            print(f"\nA {CAB_NUMBERSIZE}-digit code with no repeating digits has been generated.\nCan you guess it given only correctly placed digits (bulls)\nand correctly guessed but incorrectly placed digits (cows)?")
             while True:
                 print("  You have", guessesLeft, "guesses" if guessesLeft != 1 else "guess", "left.\n  Enter your guess: ", end="")
                 userGuess = input()
@@ -106,8 +109,8 @@ def __MAIN():
                         break
                     else:
                         repeatedDigit = False
-                        for i in range(len(userGuess)):
-                            if userGuess.count(userGuess[i]) > 1:
+                        for i in range(len(guessList)):
+                            if guessList.count(guessList[i]) > 1:
                                 repeatedDigit = True
                         if not repeatedDigit:
                             if len(guessList) == CAB_NUMBERSIZE and userGuess.isdigit():
@@ -127,10 +130,10 @@ def __MAIN():
                 correctString += str(correctSequence[i])
             if hasGuessed:
                 print("\nYou correctly guessed the code! Correct code:", correctString)
-                print("Guesses used:", guessCount, "of", NGG_MAXGUESSES if NGG_MAXGUESSES != -1 else "infinite")
+                print("Guesses used:", guessCount, "of", CAB_MAXGUESSES if CAB_MAXGUESSES != -1 else "infinite")
             else:
                 print("\nYou didn't guess correctly! Correct guess:", correctString)
-                print("Total guesses:", NGG_MAXGUESSES)
+                print("Total guesses:", CAB_MAXGUESSES)
             print("------------------------")
         elif userChoice == 3:
             clearscreen()
@@ -195,6 +198,12 @@ def __MAIN():
                     elif "true" in userInput or "false" in userInput:
                         NGG_HEATHINT = "true" in userInput
                         print("\nNew value:", NGG_HEATHINT, '\n')
+                    elif 't' in userInput or 'f' in userInput:
+                        NGG_HEATHINT = 't' in userInput
+                        print("\nNew value:", NGG_HEATHINT, '\n')
+                    elif len(userInput) == 1 and (userInput == '0' or userInput == '1'):
+                        NGG_HEATHINT = '1' in userInput
+                        print("\nNew value:", NGG_HEATHINT, '\n')
                     else:
                         print("\nInvalid input!\n")
                 elif userChoice == 4:
@@ -204,13 +213,19 @@ def __MAIN():
                     elif "true" in userInput or "false" in userInput:
                         NGG_VERYCLOSEHINT = "true" in userInput
                         print("\nNew value:", NGG_VERYCLOSEHINT, '\n')
+                    elif 't' in userInput or 'f' in userInput:
+                        NGG_VERYCLOSEHINT = 't' in userInput
+                        print("\nNew value:", NGG_VERYCLOSEHINT, '\n')
+                    elif len(userInput) == 1 and (userInput == '0' or userInput == '1'):
+                        NGG_VERYCLOSEHINT = userInput == '1'
+                        print("\nNew value:", NGG_VERYCLOSEHINT, '\n')
                     else:
                         print("\nInvalid input!\n")
                 elif userChoice == 5:
                     if len(userInput) >= 1 and hasnumber(userInput):
                         NGG_VERYCLOSEHINTPERCENTAGE = sstod(userInput)
                         NGG_VERYCLOSEHINTPERCENTAGE = max(min(NGG_VERYCLOSEHINTPERCENTAGE/100.0,0.9),0.0)
-                        print(f"\nNew value: {NGG_VERYCLOSEHINTPERCENTAGE*100.0:.1f}", '\n')
+                        print(f"\nNew value: {NGG_VERYCLOSEHINTPERCENTAGE*100.0:.1f}%", '\n')
                     else:
                         print("\nInvalid input!\n")
                 elif userChoice == 6:
@@ -365,7 +380,7 @@ def readConfigFromFile():
                 CAB_MAXGUESSES = int(configLines[7])
             except ValueError:
                 try:
-                    configFile = open("glist.txt", 'w')
+                    configFile = open("proj.config", 'w')
                     configFile.write("")
                     configFile.close()
                 except PermissionError:
@@ -376,7 +391,7 @@ def readConfigFromFile():
         return 0
     except FileNotFoundError:
         try:
-            configFile = open("glist.txt", 'w')
+            configFile = open("proj.config", 'w')
             configFile.write("")
             configFile.close()
             return 1
