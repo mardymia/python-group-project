@@ -5,12 +5,20 @@
 
 using namespace std;
 
+string input(string dialog);
 void runCommand(string command);
 string ddNum(int inputInt);
 
 int main() {
+	string customMessage = "New commit";
+	string inputString = input("Custom message? Y/N: ");
+	if (inputString.find('Y') != string::npos || inputString.find('y') != string::npos) {
+		system("cls");
+		customMessage = input("Enter custom message:\n\n> ");
+		
+	}
 	time_t rawTime = time(0);
-	string command2 = "git commit -m \"New commit (" + ddNum(localtime(&rawTime)->tm_mday) + "-";
+	string command2 = "git commit -m \"" + customMessage + " (" + ddNum(localtime(&rawTime)->tm_mday) + "-";
 	switch (localtime(&rawTime)->tm_mon) {
 		case 0:
 			command2 += "Jan-";
@@ -52,6 +60,10 @@ int main() {
 	command2 += to_string(localtime(&rawTime)->tm_year + 1900) + "-" + ddNum(localtime(&rawTime)->tm_hour) + ":" + ddNum(localtime(&rawTime)->tm_min) + ":" + ddNum(localtime(&rawTime)->tm_sec) + ")\"";
 	string command1 = "git add .";
 	string command3 = "git push origin main";
+	system("cls");
+	cout << "Commands:\n\n" << command1 << endl << command2 << endl << command3 << "\n\n";
+	system("pause");
+	system("cls");
 	runCommand(command1);
 	runCommand(command2);
 	runCommand(command3);
@@ -69,4 +81,12 @@ string ddNum(int inputInt) {
 		return "0" + to_string(inputInt);
 	else
 		return to_string(inputInt);
+}
+
+string input(string dialog) {
+	cout << dialog;
+	string userInput, table;
+	cin >> userInput;
+	getline(cin, table);
+	return userInput + table;
 }
