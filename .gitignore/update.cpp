@@ -8,6 +8,7 @@ using namespace std;
 string input(string dialog);
 void runCommand(string command);
 string ddNum(int inputInt);
+string getDateAsString();
 
 int main() {
 	string customMessage = "New commit";
@@ -18,52 +19,14 @@ int main() {
 		
 	}
 	time_t rawTime = time(0);
-	string command2 = "git commit -m \"" + customMessage + " (" + ddNum(localtime(&rawTime)->tm_mday) + "-";
-	switch (localtime(&rawTime)->tm_mon) {
-		case 0:
-			command2 += "Jan-";
-			break;
-		case 1:
-			command2 += "Feb-";
-			break;
-		case 2:
-			command2 += "Mar-";
-			break;
-		case 3:
-			command2 += "Apr-";
-			break;
-		case 4:
-			command2 += "May-";
-			break;
-		case 5:
-			command2 += "Jun-";
-			break;
-		case 6:
-			command2 += "Jul-";
-			break;
-		case 7:
-			command2 += "Aug-";
-			break;
-		case 8:
-			command2 += "Sept-";
-			break;
-		case 9:
-			command2 += "Oct-";
-			break;
-		case 10:
-			command2 += "Nov-";
-			break;
-		case 11:
-			command2 += "Dec-";
-			break;
-	}
-	command2 += to_string(localtime(&rawTime)->tm_year + 1900) + "-" + ddNum(localtime(&rawTime)->tm_hour) + ":" + ddNum(localtime(&rawTime)->tm_min) + ":" + ddNum(localtime(&rawTime)->tm_sec) + ")\"";
 	string command1 = "git add .";
+	string command2 = "git commit -m \"" + customMessage + " (" + getDateAsString() + ")\"";
 	string command3 = "git push origin main";
 	system("cls");
 	cout << "Commands:\n\n" << command1 << endl << command2 << endl << command3 << "\n\n";
 	system("pause");
 	system("cls");
+	command2 = "git commit -m \"" + customMessage + " (" + getDateAsString() + ")\"";
 	runCommand(command1);
 	runCommand(command2);
 	runCommand(command3);
@@ -89,4 +52,49 @@ string input(string dialog) {
 	cin >> userInput;
 	getline(cin, table);
 	return userInput + table;
+}
+
+string getDateAsString() {
+	time_t rawTime = time(0);
+	string outputString = ddNum(localtime(&rawTime)->tm_mday) + "-";
+	switch (localtime(&rawTime)->tm_mon) {
+		case 0:
+			outputString += "Jan-";
+			break;
+		case 1:
+			outputString += "Feb-";
+			break;
+		case 2:
+			outputString += "Mar-";
+			break;
+		case 3:
+			outputString += "Apr-";
+			break;
+		case 4:
+			outputString += "May-";
+			break;
+		case 5:
+			outputString += "Jun-";
+			break;
+		case 6:
+			outputString += "Jul-";
+			break;
+		case 7:
+			outputString += "Aug-";
+			break;
+		case 8:
+			outputString += "Sept-";
+			break;
+		case 9:
+			outputString += "Oct-";
+			break;
+		case 10:
+			outputString += "Nov-";
+			break;
+		case 11:
+			outputString += "Dec-";
+			break;
+	}
+	outputString += to_string(localtime(&rawTime)->tm_year + 1900) + "-" + ddNum(localtime(&rawTime)->tm_hour) + ":" + ddNum(localtime(&rawTime)->tm_min) + ":" + ddNum(localtime(&rawTime)->tm_sec);
+	return outputString;
 }
