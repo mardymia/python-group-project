@@ -152,7 +152,7 @@ def __MAIN():
             if userInput.isdigit():
                 userChoice = int(userInput)
             else:
-                userInput = userInput
+                userInput = userInput.lower()
                 if findany(userInput, "1", "to") != -1 and "guesses" not in userInput and "cab" not in userInput:
                     userChoice = 1
                 elif findany(userInput, "2", "of", "guesses") != -1 and "cab" not in userInput:
